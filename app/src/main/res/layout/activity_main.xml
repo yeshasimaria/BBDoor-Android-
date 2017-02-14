@@ -15,21 +15,40 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:weightSum="10">
 
-        <Button
-            android:text="Office Door"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/text_height"
+            android:text="Username"
+            android:textSize="@dimen/text_size"/>
+
+        <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/office_door_button"
-            android:onClick="openOfficeDoor" />
+            android:textSize="@dimen/text_size"
+            android:id="@+id/editText2" />
 
-        <Button
-            android:text="Meeting Room Door"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/text_height"
+            android:text="Password"
+            android:textSize="@dimen/text_size"/>
+
+        <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/meeting_room_door_button"
-            android:onClick="openMeetingRoomDoor" />
+            android:textSize="@dimen/text_size"
+            android:id="@+id/editText" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:id="@+id/login_button"
+            android:onClick="userLogin"/>
+
 
     </LinearLayout>
 </RelativeLayout>
