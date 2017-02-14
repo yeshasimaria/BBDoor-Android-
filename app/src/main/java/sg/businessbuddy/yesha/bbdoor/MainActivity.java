@@ -5,7 +5,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -26,11 +28,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openOfficeDoor(View view) {
-        new AccessDoor(this, INT_OFFICE_DOOR).execute();
+        new AccessDoor(INT_OFFICE_DOOR).execute();
     }
 
     public void openMeetingRoomDoor(View view) {
-        new AccessDoor(this, INT_MEETING_ROOM_DOOR).execute();
+        new AccessDoor(INT_MEETING_ROOM_DOOR).execute();
     }
 
     private class AccessDoor extends AsyncTask<String, Void, Void> {
@@ -41,14 +43,16 @@ public class MainActivity extends AppCompatActivity {
         private static final String URL_FOR_IP_ADDRESS =  "https://sta1.mios.com/" +
                 "locator_json.php?username=xxx";
         private static final String REQUEST_METHOD_GET = "GET";
+        private static final String UNIT_SERIAL_NUMBER = "30105938";
+        private static final String JSON_NAME_UNITS = "units";
+        private static final String JSON_NAME_SERIAL_NUMBER = "serialNumber";
+        private static final String JSON_NAME_IP_ADDRESS = "ipAddress";
+
 
         private final String doorNum;
-        private final Context context;
-
         private String ipAddress;
 
-        public AccessDoor (Context context, String doorNum) {
-            this.context = context;
+        public AccessDoor (String doorNum) {
             this.doorNum = doorNum;
         }
 
@@ -81,13 +85,18 @@ public class MainActivity extends AppCompatActivity {
                         stringBuilder.append(line);
                     }
                     inputStream.close();
-                    System.out.println("String received is = " + stringBuilder.toString());
 
                     String result = stringBuilder.toString();
 
                     JSONObject jsonObject = new JSONObject(result);
-                    JSONObject unitsObject = jsonObject.getJSONObject("units");
-                    ipAddress = unitsObject.getString("ipAddress");
+                    JSONArray unitsArray = jsonObject.getJSONArray(JSON_NAME_UNITS);
+                    for (int i = 0; i < unitsArray.length(); i++) {
+                        jsonObject = unitsArray.getJSONObject(i);
+                        String serialNumber = jsonObject.getString(JSON_NAME_SERIAL_NUMBER);
+                        if (serialNumber.equals(UNIT_SERIAL_NUMBER)) {
+                            ipAddress = jsonObject.getString(JSON_NAME_IP_ADDRESS);
+                        }
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -104,13 +113,12 @@ public class MainActivity extends AppCompatActivity {
             StringBuilder stringBuilder = new StringBuilder();
             try {
                 httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setRequestMethod("GET");
+                httpURLConnection.setRequestMethod(REQUEST_METHOD_GET);
                 httpURLConnection.connect();
 
                 responseCode = httpURLConnection.getResponseCode();
 
                 if (responseCode == HttpURLConnection.HTTP_OK) {
-                    System.out.println("I'm here! 2");
                     InputStream inputStream = httpURLConnection.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
